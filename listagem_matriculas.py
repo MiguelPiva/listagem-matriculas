@@ -4,12 +4,12 @@ import re
 import requests
 
 
-def extrair_dados(url: str) -> list[dict]:
-    response = requests.get(url)
-    js_content = response.text.strip().rstrip(";")
-    js_content = js_content.replace("todasDisciplinas=", "")
-    data = json.loads(js_content)
-    return data
+def extrair_dados(url:str) -> list[dict]:
+    resposta = requests.get(url, verify=False)
+    conteudo_json = resposta.text.strip().rstrip(";")
+    conteudo_json = conteudo_json.replace("todasDisciplinas=", "")
+    dados = json.loads(conteudo_json)
+    return dados
 
 
 def nome_para_id(nome:str, id_cursos:dict) -> int:
@@ -47,7 +47,7 @@ def listar_id_cursos(dicionario:dict) -> None:
 
 
 def dicionario_id_cursos() -> dict:
-    courses = {
+    cursos = {
                 73: 'Bacharelado em Ciência e Humanidades',
                 74: 'Bacharelado em Ciências e Tecnologia',
                 242: 'Bacharelado em Ciências Biológicas',
@@ -79,19 +79,19 @@ def dicionario_id_cursos() -> dict:
                 347: 'Licenciatura em Ciências Naturais e Exatas',
                 406: 'Engenharias'
             }
-    return courses
+    return cursos
 
 
 def imprimir_interface() -> str: 
     os.system("cls")
-    print("OPÇÕES".center(40, "/"))
+    print("OPÇÕES".center(60, "/"))
     print("1 - Listar limitadas de um curso"
         +"\n2 - Lista obrigatórias de um curso"
         +"\n3 - Listar limitadas e obrigatórias de um curso"
         +"\n4 - Exibir relação de uma disciplinas com os cursos"
         +"\n5 - Exibir ids de cursos"
-        +"\n6 - Sair"
-        )
+        +"\n6 - Sair")
+    print("/"*60)
 
 
 def entrada_id_curso(id_cursos:dict) -> int:
@@ -118,32 +118,34 @@ if __name__ == "__main__":
 
             case "1":
                 id_curso = entrada_id_curso(id_cursos)
-                print(f"DISCIPLINAS LIMITADAS DE {id_cursos[id_curso].upper()}:")
+                print(f"\nDISCIPLINAS LIMITADAS DE {id_cursos[id_curso].upper()}:")
                 listar_disciplinas(id_curso=id_curso, dados=dados, tipo="limitada")
 
             case "2":
                 id_curso = entrada_id_curso(id_cursos)
-                print(f"DISCIPLINAS OBRIGATÓRIAS DE {id_cursos[id_curso].upper()}:")
+                print(f"\nDISCIPLINAS OBRIGATÓRIAS DE {id_cursos[id_curso].upper()}:")
                 listar_disciplinas(id_curso=id_curso, dados=dados, tipo="obrigatoria")
             
             case "3":
                 id_curso = entrada_id_curso(id_cursos)
-                print(f"DISCIPLINAS LIMITADAS DE {id_cursos[id_curso].upper()}:")
+                print(f"\nDISCIPLINAS LIMITADAS DE {id_cursos[id_curso].upper()}:")
                 listar_disciplinas(id_curso=id_curso, dados=dados, tipo="limitada")
-                print(f"DISCIPLINAS OBRIGATÓRIAS DE {id_cursos[id_curso].upper()}:")
+                print(f"\nDISCIPLINAS OBRIGATÓRIAS DE {id_cursos[id_curso].upper()}:")
                 listar_disciplinas(id_curso=id_curso, dados=dados, tipo="obrigatoria")
 
             case "4":
                 disciplina = input("Digite o nome da disciplina: ").upper()
+                print()
                 listar_cursos_disciplina(dados=dados, id_cursos=id_cursos, disciplina=disciplina)
 
             case "5":
+                print()
                 listar_id_cursos(dicionario=id_cursos)
 
             case "6":
                 break
 
             case _:
-                print("Opção inválida")
+                print("\nOpção inválida")
 
         input("Pressione Enter para continuar...")
