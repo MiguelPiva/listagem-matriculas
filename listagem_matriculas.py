@@ -4,6 +4,26 @@ import re
 import requests
 
 
+def key_acentos(nome:str) -> str:
+    if nome.startswith(("Á", "Â")):
+        return "A" + nome[1:]
+    
+    elif nome.startswith(("É", "Ê")):
+        return "E" + nome[1:]
+    
+    elif nome.startswith(("Í",)):
+        return "I" + nome[1:]
+    
+    elif nome.startswith(("Ó", "Ô")):
+        return "O" + nome[1:]
+    
+    elif nome.startswith(("Ú",)):
+        return "U" + nome[1:]
+    
+    else:
+        return nome
+
+
 def extrair_dados(url:str) -> list[dict]:
     resposta = requests.get(url, verify=False)
     conteudo_json = resposta.text.strip().rstrip(";")
@@ -16,18 +36,41 @@ def nome_para_id(nome:str, id_cursos:dict) -> int:
     for chave, valor in id_cursos.items():
         if valor.lower() == nome.lower():
             return chave
-    return None
 
 
-def listar_disciplinas(id_curso:int, dados:list[dict], tipo:str) -> None:
-    set_limitadas = set()
-    for dicionario in dados:
+def listar_turmas(id_curso:int, turmas:list[dict], tipo:str) -> list[dict]:
+    lista_turmas = list()
+    for dicionario in turmas:
         for obrigatoriedade in dicionario["obrigatoriedades"]:
             if obrigatoriedade["curso_id"] == id_curso and obrigatoriedade["obrigatoriedade"] == tipo:
-                nome_disciplina = re.sub(r" \b\w{1,3}-\w+ \(\w+ \w+\)$", "", dicionario["nome"])
-                set_limitadas.add(nome_disciplina.title())
+                 lista_turmas.append(dicionario)
+    return lista_turmas
 
-    for item in sorted(list(set_limitadas)):
+
+def filtrar_listagem(id_curso:int, turmas:list[dict]) -> list[dict]:
+    lista_filtradas = list()
+    for dicionario in turmas:
+        aux = False
+        for obrigatoriedade in dicionario["obrigatoriedades"]:
+            if obrigatoriedade["curso_id"] == id_curso and obrigatoriedade["obrigatoriedade"] == "obrigatoria":
+                aux = True
+                break
+        lista_filtradas.append(dicionario) if not aux else None
+    return lista_filtradas
+
+
+def imprimir_disciplinas(turmas:list[str], filtro:bool, id_filtro:int) -> None:
+    set_disciplinas = set()
+    if filtro:
+        turmas_filtradas = filtrar_listagem(id_filtro, turmas)
+        for dicionario in turmas_filtradas:
+            nome_disciplina = re.sub(r" \b\w{1,3}-\w+ \(\w+ \w+\)$", "", dicionario["nome"])
+            set_disciplinas.add(nome_disciplina.title())
+    else:
+        for dicionario in turmas:
+            nome_disciplina = re.sub(r" \b\w{1,3}-\w+ \(\w+ \w+\)$", "", dicionario["nome"])
+            set_disciplinas.add(nome_disciplina.title())
+    for item in sorted(set_disciplinas, key=key_acentos):
         print(">> ", item)
 
 
@@ -82,15 +125,16 @@ def dicionario_id_cursos() -> dict:
     return cursos
 
 
-def imprimir_interface() -> str: 
+def imprimir_interface(filtro:bool) -> None: 
     os.system("cls")
     print("OPÇÕES".center(60, "/"))
     print("1 - Listar limitadas de um curso"
-        +"\n2 - Lista obrigatórias de um curso"
+        +"\n2 - Listar obrigatórias de um curso"
         +"\n3 - Listar limitadas e obrigatórias de um curso"
-        +"\n4 - Exibir relação de uma disciplinas com os cursos"
-        +"\n5 - Exibir ids de cursos"
-        +"\n6 - Sair")
+        +f"\n4 - Filtrar obrigatórias [{'LIGADO' if filtro else 'DESLIGADO'}]"
+        +"\n5 - Exibir relação de uma disciplinas com os cursos"
+        +"\n6 - Exibir ids de cursos"
+        +"\n7 - Sair")
     print("/"*60)
 
 
@@ -110,41 +154,65 @@ def entrada_id_curso(id_cursos:dict) -> int:
 if __name__ == "__main__":
     dados = extrair_dados("https://matricula.ufabc.edu.br/cache/todasDisciplinas.js")
     id_cursos = dicionario_id_cursos()
+    filtro = False
+    id_filtro = 0
 
     while True:
-        imprimir_interface()
+        imprimir_interface(filtro)
         opcao = input("Escolha uma opção: ")
         match opcao:
 
+            # 1 - Listar limitadas de um curso
             case "1":
                 id_curso = entrada_id_curso(id_cursos)
                 print(f"\nDISCIPLINAS LIMITADAS DE {id_cursos[id_curso].upper()}:")
-                listar_disciplinas(id_curso=id_curso, dados=dados, tipo="limitada")
+                disciplinas_lim = listar_turmas(id_curso=id_curso, turmas=dados, tipo="limitada")
+                imprimir_disciplinas(disciplinas_lim, False, id_filtro)
 
+            # 2 - Listar obrigatórias de um curso
             case "2":
                 id_curso = entrada_id_curso(id_cursos)
                 print(f"\nDISCIPLINAS OBRIGATÓRIAS DE {id_cursos[id_curso].upper()}:")
-                listar_disciplinas(id_curso=id_curso, dados=dados, tipo="obrigatoria")
+                disciplinas_obr = listar_turmas(id_curso=id_curso, turmas=dados, tipo="obrigatoria")
+                imprimir_disciplinas(disciplinas_obr, filtro, id_filtro)
             
+            # 3 - Listar limitadas e obrigatórias de um curso
             case "3":
                 id_curso = entrada_id_curso(id_cursos)
                 print(f"\nDISCIPLINAS LIMITADAS DE {id_cursos[id_curso].upper()}:")
-                listar_disciplinas(id_curso=id_curso, dados=dados, tipo="limitada")
-                print(f"\nDISCIPLINAS OBRIGATÓRIAS DE {id_cursos[id_curso].upper()}:")
-                listar_disciplinas(id_curso=id_curso, dados=dados, tipo="obrigatoria")
+                disciplinas_lim = listar_turmas(id_curso=id_curso, turmas=dados, tipo="limitada")
+                imprimir_disciplinas(disciplinas_lim, False, id_filtro)
 
+                print(f"\nDISCIPLINAS OBRIGATÓRIAS DE {id_cursos[id_curso].upper()}:")
+                disciplinas_obr = listar_turmas(id_curso=id_curso, turmas=dados, tipo="obrigatoria")
+                imprimir_disciplinas(disciplinas_obr, filtro, id_filtro)
+
+            # 4 - Filtrar obrigatórias
             case "4":
+                if filtro:
+                    filtro = False
+                    print("\nFiltro de obrigatórias desligado.")
+                else:
+                    filtro = True
+                    print("\nFiltro de obrigatórias ligado. Escolha um curso para filtrar.")
+                    id_filtro = entrada_id_curso(id_cursos)
+
+            # 5 - Exibir relação de uma disciplinas com os cursos
+            case "5":
                 disciplina = input("Digite o nome da disciplina: ").upper()
                 print()
                 listar_cursos_disciplina(dados=dados, id_cursos=id_cursos, disciplina=disciplina)
 
-            case "5":
+            # 6 - Exibir ids de cursos
+            case "6":
                 print()
                 listar_id_cursos(dicionario=id_cursos)
 
-            case "6":
+            # 7 - Sair
+            case "7":
                 break
-
+            
+            # Opção inválida
             case _:
                 print("\nOpção inválida")
 
