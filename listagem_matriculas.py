@@ -43,8 +43,21 @@ def listar_turmas(id_curso:int, turmas:list[dict], tipo:str) -> list[dict]:
     for dicionario in turmas:
         for obrigatoriedade in dicionario["obrigatoriedades"]:
             if obrigatoriedade["curso_id"] == id_curso and obrigatoriedade["obrigatoriedade"] == tipo:
-                 lista_turmas.append(dicionario)
+                lista_turmas.append(dicionario)
+                break
     return lista_turmas
+
+
+def listar_turmas_comum(id_curso1:int, id_curso2:int, turmas:list[dict], tipo:str) -> list[dict]:
+    lista_comum = list()
+    turmas_curso1 = listar_turmas(id_curso1, turmas, tipo)
+    turmas_curso2 = listar_turmas(id_curso2, turmas, tipo)
+    for dicionario1 in turmas_curso1:
+        for dicionario2 in turmas_curso2:
+            if dicionario1["nome"] == dicionario2["nome"]:
+                lista_comum.append(dicionario1)
+                break
+    return lista_comum
 
 
 def filtrar_listagem(id_curso:int, turmas:list[dict]) -> list[dict]:
@@ -131,10 +144,11 @@ def imprimir_interface(filtro:bool) -> None:
     print("1 - Listar limitadas de um curso"
         +"\n2 - Listar obrigatórias de um curso"
         +"\n3 - Listar limitadas e obrigatórias de um curso"
-        +f"\n4 - Filtrar obrigatórias [{'LIGADO' if filtro else 'DESLIGADO'}]"
-        +"\n5 - Exibir relação de uma disciplinas com os cursos"
-        +"\n6 - Exibir ids de cursos"
-        +"\n7 - Sair")
+        +"\n4 - Listar disciplinas em comum entre dois cursos"
+        +f"\n5 - Filtrar obrigatórias [{'LIGADO' if filtro else 'DESLIGADO'}]"
+        +"\n6 - Exibir relação de uma disciplinas com os cursos"
+        +"\n7 - Exibir ids de cursos"
+        +"\n8 - Sair")
     print("/"*60)
 
 
@@ -187,8 +201,21 @@ if __name__ == "__main__":
                 disciplinas_obr = listar_turmas(id_curso=id_curso, turmas=dados, tipo="obrigatoria")
                 imprimir_disciplinas(disciplinas_obr, filtro, id_filtro)
 
-            # 4 - Filtrar obrigatórias
+            # 4 - Listar disciplinas em comum entre dois cursos
             case "4":
+                id_curso1 = entrada_id_curso(id_cursos)
+                id_curso2 = entrada_id_curso(id_cursos)
+                print(f"\n{id_cursos[id_curso1].upper()} X {id_cursos[id_curso2].upper()}")
+                print(f"DISCIPLINAS OBRIGATÓRIAS EM COMUM:")
+                disciplinas_comum = listar_turmas_comum(id_curso1, id_curso2, dados, "obrigatoria")
+                imprimir_disciplinas(disciplinas_comum, filtro, id_filtro)
+
+                print(f"\nDISCIPLINAS LIMITADAS EM COMUM:")
+                disciplinas_comum = listar_turmas_comum(id_curso1, id_curso2, dados, "limitada")
+                imprimir_disciplinas(disciplinas_comum, False, id_filtro)
+
+            # 5 - Filtrar obrigatórias
+            case "5":
                 if filtro:
                     filtro = False
                     print("\nFiltro de obrigatórias desligado.")
@@ -197,19 +224,19 @@ if __name__ == "__main__":
                     print("\nFiltro de obrigatórias ligado. Escolha um curso para filtrar.")
                     id_filtro = entrada_id_curso(id_cursos)
 
-            # 5 - Exibir relação de uma disciplinas com os cursos
-            case "5":
+            # 6 - Exibir relação de uma disciplinas com os cursos
+            case "6":
                 disciplina = input("Digite o nome da disciplina: ").upper()
                 print()
                 listar_cursos_disciplina(dados=dados, id_cursos=id_cursos, disciplina=disciplina)
 
-            # 6 - Exibir ids de cursos
-            case "6":
+            # 7 - Exibir ids de cursos
+            case "7":
                 print()
                 listar_id_cursos(dicionario=id_cursos)
 
-            # 7 - Sair
-            case "7":
+            # 8 - Sair
+            case "8":
                 break
             
             # Opção inválida

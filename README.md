@@ -15,10 +15,11 @@ Ao executar o programa, será impressa no terminal a interface abaixo, e assim, 
 1 - Listar limitadas de um curso
 2 - Listar obrigatórias de um curso
 3 - Listar limitadas e obrigatórias de um curso
-4 - Filtrar obrigatórias [DESLIGADO]
-5 - Exibir relação de uma disciplinas com os cursos
-6 - Exibir ids de cursos
-7 - Sair
+4 - Listar disciplinas em comum entre dois cursos
+5 - Filtrar obrigatórias [DESLIGADO]
+6 - Exibir relação de uma disciplinas com os cursos
+7 - Exibir ids de cursos
+8 - Sair
 ////////////////////////////////////////////////////////////
-Escolha uma opção: 
+Escolha uma opção:
 ```
