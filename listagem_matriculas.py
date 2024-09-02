@@ -48,10 +48,10 @@ def listar_turmas(id_curso:int, turmas:list[dict], tipo:str) -> list[dict]:
     return lista_turmas
 
 
-def listar_turmas_comum(id_curso1:int, id_curso2:int, turmas:list[dict], tipo:str) -> list[dict]:
+def listar_turmas_comum(id_curso_1:int, id_curso_2:int, turmas:list[dict], tipo_1:str, tipo_2:str) -> list[dict]:
     lista_comum = list()
-    turmas_curso1 = listar_turmas(id_curso1, turmas, tipo)
-    turmas_curso2 = listar_turmas(id_curso2, turmas, tipo)
+    turmas_curso1 = listar_turmas(id_curso_1, turmas, tipo_1)
+    turmas_curso2 = listar_turmas(id_curso_2, turmas, tipo_2)
     for dicionario1 in turmas_curso1:
         for dicionario2 in turmas_curso2:
             if dicionario1["nome"] == dicionario2["nome"]:
@@ -203,16 +203,24 @@ if __name__ == "__main__":
 
             # 4 - Listar disciplinas em comum entre dois cursos
             case "4":
-                id_curso1 = entrada_id_curso(id_cursos)
-                id_curso2 = entrada_id_curso(id_cursos)
-                print(f"\n{id_cursos[id_curso1].upper()} X {id_cursos[id_curso2].upper()}")
+                id_curso_1 = entrada_id_curso(id_cursos)
+                id_curso_2 = entrada_id_curso(id_cursos)
+                print(f"\n{id_cursos[id_curso_1]} X {id_cursos[id_curso_2]}")
                 print(f"DISCIPLINAS OBRIGATÓRIAS EM COMUM:")
-                disciplinas_comum = listar_turmas_comum(id_curso1, id_curso2, dados, "obrigatoria")
-                imprimir_disciplinas(disciplinas_comum, filtro, id_filtro)
+                disciplinas_comum_1 = listar_turmas_comum(id_curso_1, id_curso_2, dados, "obrigatoria", "obrigatoria")
+                imprimir_disciplinas(disciplinas_comum_1, filtro, id_filtro)
 
                 print(f"\nDISCIPLINAS LIMITADAS EM COMUM:")
-                disciplinas_comum = listar_turmas_comum(id_curso1, id_curso2, dados, "limitada")
-                imprimir_disciplinas(disciplinas_comum, False, id_filtro)
+                disciplinas_comum_2 = listar_turmas_comum(id_curso_1, id_curso_2, dados, "limitada", "limitada")
+                imprimir_disciplinas(disciplinas_comum_2, False, id_filtro)
+
+                print(f"\nOBRIGATÓRIAS PARA {id_cursos[id_curso_1].upper()} E LIMITADAS PARA {id_cursos[id_curso_2].upper()}:")
+                disciplinas_comum_3 = listar_turmas_comum(id_curso_1, id_curso_2, dados, tipo_1="obrigatoria", tipo_2="limitada")
+                imprimir_disciplinas(disciplinas_comum_3, False, id_filtro)
+
+                print(f"\nOBRIGATÓRIAS PARA {id_cursos[id_curso_2].upper()} E LIMITADAS PARA {id_cursos[id_curso_1].upper()}:")
+                disciplinas_comum_4 = listar_turmas_comum(id_curso_2, id_curso_1, dados, tipo_1="obrigatoria", tipo_2="limitada")
+                imprimir_disciplinas(disciplinas_comum_4, False, id_filtro)
 
             # 5 - Filtrar obrigatórias
             case "5":
