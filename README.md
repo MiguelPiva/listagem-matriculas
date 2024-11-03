@@ -4,11 +4,11 @@ Programa para auxiliar na identificação de disciplinas limitadas e obrigatóri
 ---
 Algumas observações:
 
-1. Além do Python, para que o código funcione, será necessário instalar separadamente o módulo **requests**, caso você não o tenha. Basta digitar ``` pip install requests ``` no seu terminal para instalar o módulo ou ``` pip list ``` para verificar se ele já está instalado. Os módulos **json**, **os** e **re** já vêm instalados no Python por padrão.
+1. Além do Python, para que o código funcione, será necessário instalar separadamente o módulo **requests**, caso você não o tenha. Basta digitar ``` pip install requests ``` no seu terminal (tutorial [aqui](https://youtu.be/r29uzZpIlWI?si=yQawakwkg-6VGRhS)) para instalar o módulo ou ``` pip list ``` para verificar se ele já está instalado. Os módulos **json**, **os** e **re** já vêm instalados no Python por padrão.
 
-2. Caso não queira que as disciplinas obrigatórias de um curso interdisciplinar sejam listadas juntas das obrigatórias de curso específico, basta ativar a opção 4 e inserir o id do curso interdisciplinar.
+2. Caso não queira que as disciplinas obrigatórias de um curso interdisciplinar sejam listadas juntas das obrigatórias de curso específico, basta ativar a opção 5 e inserir o id do curso interdisciplinar.
 
-Ao executar o programa, será impressa no terminal a interface abaixo, e assim, basta digitar o número da opção que você quiser e pressionar Enter:
+Ao executar o programa, ele poderá levar alguns segundos para coletar e processar os dados. Ao finalizar o processamento, será impressa no terminal a interface abaixo, e assim, basta digitar o número da opção que você quiser e confirmar pressionando Enter:
 
 ```
 ///////////////////////////OPÇÕES///////////////////////////
